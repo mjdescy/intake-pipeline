@@ -34,7 +34,8 @@ public static class ManifestRunner
             completedAtUtc,
             succeeded ? ManifestStatus.Success : ManifestStatus.Failure,
             entries,
-            errors);
+            errors,
+            new ManifestProvenance(ManifestSteps.Manifest, null, null));
     }
 
     /// <summary>

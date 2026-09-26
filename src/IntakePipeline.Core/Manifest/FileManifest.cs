@@ -11,6 +11,7 @@ namespace IntakePipeline.Core.Manifest;
 /// <param name="Status">Overall run status; see <see cref="ManifestStatus"/>.</param>
 /// <param name="Entries">One entry per file discovered under the folder.</param>
 /// <param name="Errors">Global error messages, e.g. a missing source folder.</param>
+/// <param name="Provenance">Where this manifest came from, or null when it is not derived from another manifest.</param>
 public sealed record FileManifest(
     Guid RunId,
     string Folder,
@@ -18,4 +19,5 @@ public sealed record FileManifest(
     DateTimeOffset CompletedAtUtc,
     string Status,
     IReadOnlyList<ManifestFileEntry> Entries,
-    IReadOnlyList<string> Errors);
+    IReadOnlyList<string> Errors,
+    ManifestProvenance? Provenance = null);

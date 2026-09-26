@@ -8,7 +8,7 @@ Pipeline steps can be run independently and can be excuted in any order in a pip
 
 | Step      | Description                                                                             |
 | --------- | --------------------------------------------------------------------------------------- |
-| Ingest    | Copy files from a source folder to a destination folder, recording hashes and sizes in a manifest |
+| Ingest    | Copy the files listed in a manifest to a destination folder, recording hashes and sizes in a new manifest |
 | Unpack    | Extract files found within archive formats such as .zip                                 |
 | Backup    | Create a backup of a group of files; optionally compress them into an archive           |
 | Inspect   | Collect metadata, such as control totals, from files                                    |
@@ -37,24 +37,18 @@ The manifest is a shared structure: its definition (`FileManifest`, `ManifestFil
 
 ## Ingest step
 
-The Ingest step copies (never moves) every file under a source folder to a destination folder, preserving the folder structure, and records the outcome in a result manifest. It is a console app driven by an input manifest:
-
-```json
-{
-  "sourceFolder": "data/incoming",
-  "destinationFolder": "data/raw"
-}
-```
-
-Relative paths resolve against the input manifest's own folder. Run it like this:
+The Ingest step copies (never moves) every file listed in an input manifest to a destination folder, preserving the folder structure, and records the outcome in a new manifest. Both the input and the result are the shared manifest structure, so the output of the Manifest step can be fed straight in:
 
 ```sh
-IntakePipeline.Step.Ingest ingest-manifest.json --output ingest-result.json
+IntakePipeline.Step.Manifest data/incoming --run-id 6f9619ff-8b86-d011-b42d-00cf4fc964ff --output incoming.json
+IntakePipeline.Step.Ingest incoming.json --destination data/raw --output raw.json
 ```
 
-Options: `--output/-o` writes the result manifest to a file; `--json` prints it to stdout instead (wins over `--quiet`); `--quiet/-q` suppresses all stdout; `--version` prints the build version. Exit codes: 0 = success, 1 = usage error, 2 = runtime error.
+Options: `<manifest>` is the path to the input file manifest; `--destination/-d` is the folder to copy the files to (required); `--run-id` is an optional GUID for the result manifest (defaults to a new one); `--output/-o` writes the result manifest to a file; `--json` prints it to stdout instead (wins over `--quiet`); `--quiet/-q` suppresses all stdout; `--version` prints the build version. Exit codes: 0 = success, 1 = usage error, 2 = runtime error. Command-line paths resolve against the current directory; paths inside a manifest are absolute.
 
-The result manifest lists, for every file discovered under the source folder: its source and destination paths, its SHA-256 hash (lowercase hex), its size in bytes, and any per-file error; plus global errors and an overall status (`success`/`failure`).
+The result manifest describes the destination folder. It lists, for every file copied: its destination path, name, extension, SHA-256 hash (lowercase hex), size in bytes, and any per-file error; plus global errors, an overall status (`success`/`failure`), and provenance that links it to the input manifest (`step`, `parentRunId`, `parentManifestPath`). Entries that could not be ingested — a source that changed or went missing since it was manifested, or an entry the input manifest already flagged — are listed with the reason. The manifest lists what this run copied, not a full inventory of the destination.
+
+Each copy is verified against the SHA-256 hash recorded in the input manifest, so drift in the source since it was manifested is reported as an error rather than copied silently.
 
 ## Manifest step
 

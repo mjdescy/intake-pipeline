@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using CommandLine;
-using IntakePipeline.Step.Ingest.Manifest;
+using IntakePipeline.Core.Manifest;
 
 namespace IntakePipeline.Step.Ingest;
 
@@ -57,21 +57,73 @@ public static class Program
         if (string.IsNullOrWhiteSpace(options.ManifestPath))
         {
             Console.Error.WriteLine(
-                "No input manifest given. Pass the path to an input manifest JSON file; pass --help for full usage.");
+                "No input manifest given. Pass the path to a file manifest JSON file; pass --help for full usage.");
             return (int)ExitCode.UsageError;
         }
 
-        IngestManifest manifest;
+        if (string.IsNullOrWhiteSpace(options.DestinationFolder))
+        {
+            Console.Error.WriteLine(
+                "No destination given. Pass --destination <folder> to copy the manifest's files to; pass --help for full usage.");
+            return (int)ExitCode.UsageError;
+        }
+
+        Guid runId;
+        if (string.IsNullOrWhiteSpace(options.RunId))
+        {
+            runId = Guid.NewGuid();
+        }
+        else if (!Guid.TryParse(options.RunId, out runId))
+        {
+            Console.Error.WriteLine($"Invalid run id '{options.RunId}'. Pass --run-id <guid>.");
+            return (int)ExitCode.UsageError;
+        }
+
+        string manifestPath;
+        string destinationFolder;
         try
         {
-            manifest = ManifestIO.ReadIngestManifest(options.ManifestPath);
+            manifestPath = Path.GetFullPath(options.ManifestPath);
+            destinationFolder = Path.GetFullPath(options.DestinationFolder);
+        }
+        catch (Exception ex) when (ex is ArgumentException or NotSupportedException or PathTooLongException)
+        {
+            Console.Error.WriteLine($"A path argument is not valid: {ex.Message}");
+            return (int)ExitCode.UsageError;
+        }
+
+        FileManifest manifest;
+        try
+        {
+            manifest = ManifestIO.ReadFileManifest(options.ManifestPath);
         }
         catch (Exception ex) when (ex is FileNotFoundException or InvalidDataException
             or UnauthorizedAccessException or IOException)
         {
-            Console.Error.WriteLine($"{ex.Message} Check that the manifest is a readable JSON file with 'sourceFolder' and 'destinationFolder'.");
+            Console.Error.WriteLine($"{ex.Message} Check that the manifest is a readable file manifest JSON file.");
             return (int)ExitCode.UsageError;
         }
+
+        if (!IsFileManifest(manifest))
+        {
+            Console.Error.WriteLine(
+                $"'{options.ManifestPath}' is not a file manifest (missing 'folder', 'status', or 'entries'). "
+                + "Produce one with IntakePipeline.Step.Manifest, then ingest it.");
+            return (int)ExitCode.UsageError;
+        }
+
+        string sourceFolder;
+        try
+        {
+            sourceFolder = Path.GetFullPath(manifest.Folder);
+        }
+        catch (Exception ex) when (ex is ArgumentException or NotSupportedException or PathTooLongException)
+        {
+            Console.Error.WriteLine($"The manifest's folder is not valid: '{manifest.Folder}' ({ex.Message}).");
+            return (int)ExitCode.UsageError;
+        }
+
+        manifest = manifest with { Folder = sourceFolder };
 
         if (string.IsNullOrWhiteSpace(options.OutputPath) && !options.Json)
         {
@@ -80,16 +132,17 @@ public static class Program
             return (int)ExitCode.UsageError;
         }
 
-        IngestResultManifest result = IngestRunner.Run(manifest);
+        FileManifest result = IngestRunner.Run(manifest, destinationFolder, runId, manifestPath);
 
         bool resultManifestWritten = true;
         if (!string.IsNullOrWhiteSpace(options.OutputPath))
         {
             try
             {
-                ManifestIO.WriteIngestResultManifest(result, options.OutputPath);
+                ManifestIO.WriteFileManifest(result, options.OutputPath);
             }
-            catch (Exception ex) when (ex is UnauthorizedAccessException or IOException)
+            catch (Exception ex) when (ex is UnauthorizedAccessException or IOException
+                or ArgumentException or NotSupportedException or PathTooLongException)
             {
                 resultManifestWritten = false;
                 Console.Error.WriteLine($"Result manifest could not be written to '{options.OutputPath}': {ex.Message}");
@@ -103,14 +156,14 @@ public static class Program
             // --json wins over --quiet: the JSON payload is the point. Print it
             // even when the result manifest file could not be written, so the
             // run's data is not lost.
-            Console.Out.WriteLine(ManifestIO.SerializeIngestResultManifest(result));
+            Console.Out.WriteLine(ManifestIO.SerializeFileManifest(result));
         }
         else if (!options.Quiet)
         {
             int copiedCount = result.Entries.Count(entry => entry.Error is null);
             int errorCount = result.Errors.Count + result.Entries.Count(entry => entry.Error is not null);
             Console.Out.WriteLine(
-                $"Copied {copiedCount} of {result.Entries.Count} files from '{result.SourceFolder}' to '{result.DestinationFolder}'.");
+                $"Ingested {copiedCount} of {result.Entries.Count} files from '{manifest.Folder}' to '{result.Folder}'.");
             if (resultManifestWritten && !string.IsNullOrWhiteSpace(options.OutputPath))
             {
                 Console.Out.WriteLine($"Result manifest: {Path.GetFullPath(options.OutputPath)}");
@@ -126,6 +179,15 @@ public static class Program
             : (int)ExitCode.RuntimeError;
     }
 
+    // A file manifest must carry the fields this step consumes. An older
+    // config-style manifest (e.g. {"sourceFolder": ...}) deserializes here with
+    // those fields null, so it is rejected rather than treated as empty.
+    private static bool IsFileManifest(FileManifest manifest) =>
+        !string.IsNullOrWhiteSpace(manifest.Folder)
+        && manifest.Status is not null
+        && manifest.Entries is not null
+        && manifest.Errors is not null;
+
     // The informational version, e.g. "0.1.0+49742dd", is the SDK-generated
     // version plus the git hash, so it identifies the exact build.
     private static string InformationalVersion =>
@@ -135,7 +197,7 @@ public static class Program
         ?? "unknown";
 
     // The CLI output contract requires error messages on stderr in every mode.
-    private static void WriteErrors(IngestResultManifest result)
+    private static void WriteErrors(FileManifest result)
     {
         foreach (string error in result.Errors)
         {

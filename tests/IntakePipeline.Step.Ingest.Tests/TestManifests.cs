@@ -1,10 +1,12 @@
 using System.Text.Json;
+using IntakePipeline.Core.Manifest;
 
 namespace IntakePipeline.Step.Ingest.Tests;
 
 /// <summary>
-/// Helpers for writing input manifests during tests. The JSON is produced
-/// with System.Text.Json so path escaping is always correct.
+/// Helpers for writing input file manifests during tests. The JSON is produced
+/// with <see cref="ManifestIO"/>, so it matches exactly what the pipeline steps
+/// write and read.
 /// </summary>
 internal static class TestManifests
 {
@@ -14,14 +16,13 @@ internal static class TestManifests
     };
 
     /// <summary>
-    /// Writes an input manifest into <paramref name="manifestDirectory"/>
-    /// with the given (usually relative) folder paths, and returns its path.
+    /// Writes <paramref name="manifest"/> as JSON into
+    /// <paramref name="directory"/> and returns the full path.
     /// </summary>
-    internal static string Write(string manifestDirectory, string sourceFolder, string destinationFolder)
+    internal static string Write(FileManifest manifest, string directory, string fileName = "manifest.json")
     {
-        string path = Path.Combine(manifestDirectory, "manifest.json");
-        File.WriteAllText(path, JsonSerializer.Serialize(
-            new { sourceFolder, destinationFolder }, CamelCase));
+        string path = Path.Combine(directory, fileName);
+        ManifestIO.WriteFileManifest(manifest, path);
         return path;
     }
 }

@@ -20,6 +20,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\IntakePipeline.Step.Ingest\IntakePipeline.Step.Ingest.csproj" />
+    <ProjectReference Include="..\..\src\IntakePipeline.Core\IntakePipeline.Core.csproj" />
+    <ProjectReference Include="..\..\src\IntakePipeline.Step.Manifest\IntakePipeline.Step.Manifest.csproj" />
   </ItemGroup>
 
 </Project>

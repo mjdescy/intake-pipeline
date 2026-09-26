@@ -62,6 +62,51 @@ public sealed class ManifestIOTests
     }
 
     [Fact]
+    public void SerializeFileManifest_WithProvenance_RoundTripsAllProvenanceFields()
+    {
+        Guid parentRunId = Guid.Parse("11112222-3333-4444-5555-666677778888");
+        FileManifest manifest = new(
+            Guid.NewGuid(),
+            "/folder",
+            DateTimeOffset.UtcNow,
+            DateTimeOffset.UtcNow,
+            ManifestStatus.Success,
+            [],
+            [],
+            new ManifestProvenance(ManifestSteps.Ingest, parentRunId, "/abs/parent.json"));
+
+        string json = ManifestIO.SerializeFileManifest(manifest);
+        FileManifest? roundTripped = JsonSerializer.Deserialize<FileManifest>(
+            json, TestJson.CamelCase);
+
+        Assert.NotNull(roundTripped);
+        ManifestProvenance provenance = Assert.IsType<ManifestProvenance>(roundTripped.Provenance);
+        Assert.Equal(ManifestSteps.Ingest, provenance.Step);
+        Assert.Equal(parentRunId, provenance.ParentRunId);
+        Assert.Equal("/abs/parent.json", provenance.ParentManifestPath);
+    }
+
+    [Fact]
+    public void SerializeFileManifest_WithoutProvenance_RoundTripsNullProvenance()
+    {
+        FileManifest manifest = new(
+            Guid.NewGuid(),
+            "/folder",
+            DateTimeOffset.UtcNow,
+            DateTimeOffset.UtcNow,
+            ManifestStatus.Success,
+            [],
+            []);
+
+        string json = ManifestIO.SerializeFileManifest(manifest);
+        FileManifest? roundTripped = JsonSerializer.Deserialize<FileManifest>(
+            json, TestJson.CamelCase);
+
+        Assert.NotNull(roundTripped);
+        Assert.Null(roundTripped.Provenance);
+    }
+
+    [Fact]
     public void ReadFileManifest_WithMissingFile_ThrowsFileNotFoundException()
     {
         using TempDirectory directory = new();

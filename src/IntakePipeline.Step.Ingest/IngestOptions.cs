@@ -4,18 +4,29 @@ namespace IntakePipeline.Step.Ingest;
 
 /// <summary>
 /// Command line options for the ingest step. The single positional argument
-/// is the input manifest; everything else is a flag or option.
+/// is the input file manifest; the destination and everything else are flags
+/// or options.
 /// </summary>
 public sealed class IngestOptions
 {
     /// <summary>
-    /// Path to the input manifest JSON file. Not enforced by the parser so
+    /// Path to the input file manifest JSON. Not enforced by the parser so
     /// that --version and --help work without it; <see cref="Program"/>
     /// validates it instead.
     /// </summary>
     [Value(0, Required = false, MetaName = "manifest",
-        HelpText = "Path to the input manifest JSON file, e.g. ingest-manifest.json. Relative 'sourceFolder' and 'destinationFolder' paths inside it resolve against the manifest's own folder.")]
+        HelpText = "Path to the input file manifest JSON, e.g. the output of IntakePipeline.Step.Manifest.")]
     public string ManifestPath { get; set; } = "";
+
+    /// <summary>Folder to copy the manifest's files to.</summary>
+    [Option('d', "destination", Required = false,
+        HelpText = "Folder to copy the manifest's files to, preserving folder structure. Relative paths resolve against the current directory.")]
+    public string? DestinationFolder { get; set; }
+
+    /// <summary>Run identifier to record in the result manifest.</summary>
+    [Option("run-id", Required = false,
+        HelpText = "GUID identifying this run, recorded in the result manifest. Defaults to a new GUID.")]
+    public string? RunId { get; set; }
 
     /// <summary>Path to write the result manifest JSON file to.</summary>
     [Option('o', "output", Required = false,
