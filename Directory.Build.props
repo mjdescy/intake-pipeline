@@ -1,0 +1,27 @@
+<Project>
+    <!-- General project information -->
+    <PropertyGroup>
+        <Version>0.1.0</Version>
+        <Authors>Michael Descy</Authors>
+        <Company>Michael Descy</Company>
+        <Product>Intake Pipeline</Product>
+        <Description>File processing pipeline for database or data lake ingestion.</Description>
+        <Copyright>Copyright © 2026 Michael Descy</Copyright>
+        <RepositoryUrl>https://github.com/mjdescy/intake-pipeline</RepositoryUrl>
+    </PropertyGroup>
+    <!-- dotnet version -->
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+    <!-- Use artifacts output directory for all projects -->
+    <PropertyGroup>
+        <UseArtifactsOutput>true</UseArtifactsOutput>
+    </PropertyGroup>
+    <!-- Release build: produce a single .exe file and omit debug symbols -->
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <PublishSingleFile>true</PublishSingleFile>
+        <DebugType>none</DebugType>
+        <DebugSymbols>false</DebugSymbols>
+    </PropertyGroup>
+</Project>

@@ -1,0 +1,34 @@
+{
+  "features": {
+    "ghcr.io/devcontainers-extra/features/micro:1": {
+      "version": "1.0.7",
+      "resolved": "ghcr.io/devcontainers-extra/features/micro@sha256:f1651293717a8d9d3e9919b3b100615edb05d2191b58b6672e741bf4d457ddf0",
+      "integrity": "sha256:f1651293717a8d9d3e9919b3b100615edb05d2191b58b6672e741bf4d457ddf0"
+    },
+    "ghcr.io/devcontainers/features/copilot-cli:1": {
+      "version": "1.1.3",
+      "resolved": "ghcr.io/devcontainers/features/copilot-cli@sha256:e10d091ae7ef9b8d2ed5f601d75f5a090bc04acbac1a26d4cd3c0d5edde4ea10",
+      "integrity": "sha256:e10d091ae7ef9b8d2ed5f601d75f5a090bc04acbac1a26d4cd3c0d5edde4ea10"
+    },
+    "ghcr.io/jsburckhardt/devcontainer-features/just:1": {
+      "version": "1.0.0",
+      "resolved": "ghcr.io/jsburckhardt/devcontainer-features/just@sha256:5c90013b36669270be21c69e7d8e5b6148b4b0b34fca9e104a599edf0d7c11af",
+      "integrity": "sha256:5c90013b36669270be21c69e7d8e5b6148b4b0b34fca9e104a599edf0d7c11af"
+    },
+    "ghcr.io/jsburckhardt/devcontainer-features/lazygit:1": {
+      "version": "1.0.0",
+      "resolved": "ghcr.io/jsburckhardt/devcontainer-features/lazygit@sha256:d75b1b6fd81dae62ca352fa6546a796324259e4b6dac3d1fd9d6abfa985d8047",
+      "integrity": "sha256:d75b1b6fd81dae62ca352fa6546a796324259e4b6dac3d1fd9d6abfa985d8047"
+    },
+    "ghcr.io/jsburckhardt/devcontainer-features/opencode:1": {
+      "version": "1.1.1",
+      "resolved": "ghcr.io/jsburckhardt/devcontainer-features/opencode@sha256:047f9144ad6540ee416cc2ea170f41bfae887c6c2cd883e14d2ab44a1ce20fc8",
+      "integrity": "sha256:047f9144ad6540ee416cc2ea170f41bfae887c6c2cd883e14d2ab44a1ce20fc8"
+    },
+    "ghcr.io/jsburckhardt/devcontainer-features/yazi:1": {
+      "version": "1.0.1",
+      "resolved": "ghcr.io/jsburckhardt/devcontainer-features/yazi@sha256:35383727c0eee36d02f89ee7e805cbd94dfabe6c86d24c2e07e33b1a678e098a",
+      "integrity": "sha256:35383727c0eee36d02f89ee7e805cbd94dfabe6c86d24c2e07e33b1a678e098a"
+    }
+  }
+}
