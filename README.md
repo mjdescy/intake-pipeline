@@ -15,6 +15,7 @@ Pipeline steps can be run independently and can be excuted in any order in a pip
 | Classify  | Classify files according to what schema requirements they match                         |
 | Transform | Convert data files to preferred formats (e.g., convert .xlsx to .csv)                   |
 | Package   | Materialize a set of files listed on a manifest to a clean package in a standard format |
+| Manifest  | Describe every file under a folder in a manifest, recording its path, name, SHA-256 hash, size, and extension |
 
 ## Data lineage
 
@@ -44,3 +45,36 @@ IntakePipeline.Step.Ingest ingest-manifest.json --output ingest-result.json
 Options: `--output/-o` writes the result manifest to a file; `--json` prints it to stdout instead (wins over `--quiet`); `--quiet/-q` suppresses all stdout; `--version` prints the build version. Exit codes: 0 = success, 1 = usage error, 2 = runtime error.
 
 The result manifest lists, for every file discovered under the source folder: its source and destination paths, its SHA-256 hash (lowercase hex), its size in bytes, and any per-file error; plus global errors and an overall status (`success`/`failure`).
+
+## Manifest step
+
+The Manifest step builds a manifest describing every file under a folder, including all subfolders. Each entry records the file's path, name, extension, size in bytes, and SHA-256 hash (lowercase hex). It reads files only; nothing is copied, moved, or changed. Run it like this:
+
+```sh
+IntakePipeline.Step.Manifest data/raw --run-id 6f9619ff-8b86-d011-b42d-00cf4fc964ff --output manifest.json
+```
+
+Options: `--run-id` is the GUID identifying the run; `--output/-o` writes the manifest to a file (required unless `--json` is used); `--json` prints it to stdout instead (wins over `--quiet`); `--quiet/-q` suppresses all stdout; `--version` prints the build version. Exit codes: 0 = success, 1 = usage error, 2 = runtime error.
+
+The manifest records the run id, the manifested folder, the UTC date/time of the run start and completion, an overall status (`success`/`failure`), one entry per file, and any global errors:
+
+```json
+{
+  "runId": "6f9619ff-8b86-d011-b42d-00cf4fc964ff",
+  "folder": "/data/raw",
+  "startedAtUtc": "2026-09-26T12:00:00.0000000+00:00",
+  "completedAtUtc": "2026-09-26T12:00:01.0000000+00:00",
+  "status": "success",
+  "entries": [
+    {
+      "filePath": "/data/raw/a.txt",
+      "fileName": "a.txt",
+      "sha256": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+      "fileSizeInBytes": 5,
+      "fileExtension": ".txt",
+      "error": null
+    }
+  ],
+  "errors": []
+}
+```
