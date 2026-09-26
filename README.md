@@ -25,6 +25,16 @@ Data lineage will be tracked throughout the pipeline.
 
 Files will be kept track of in manifests, which are file lists that describe the contents of a folder or package. In this context, a package is merely a group of files.
 
+The manifest is a shared structure: its definition (`FileManifest`, `ManifestFileEntry`, `ManifestStatus`) and its JSON read/write code (`ManifestIO`) live in the `IntakePipeline.Core` class library, which every pipeline step references. Each step keeps only its own runner and CLI.
+
+## Projects
+
+| Project | Kind | Purpose |
+| --- | --- | --- |
+| `IntakePipeline.Core` | class library | Shared domain types, including the manifest |
+| `IntakePipeline.Step.Ingest` | console app | Ingest step |
+| `IntakePipeline.Step.Manifest` | console app | Manifest step |
+
 ## Ingest step
 
 The Ingest step copies (never moves) every file under a source folder to a destination folder, preserving the folder structure, and records the outcome in a result manifest. It is a console app driven by an input manifest:

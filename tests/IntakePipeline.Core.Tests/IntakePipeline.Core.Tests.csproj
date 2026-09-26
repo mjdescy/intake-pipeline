@@ -19,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\IntakePipeline.Step.Manifest\IntakePipeline.Step.Manifest.csproj" />
     <ProjectReference Include="..\..\src\IntakePipeline.Core\IntakePipeline.Core.csproj" />
   </ItemGroup>
 

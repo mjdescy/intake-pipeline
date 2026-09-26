@@ -1,10 +1,10 @@
-namespace IntakePipeline.Step.Manifest.Manifest;
+namespace IntakePipeline.Core.Manifest;
 
 /// <summary>
-/// Describes a single file discovered under the manifested folder: where it
-/// lives, its name and extension, its content hash and size, and any error
-/// that prevented it from being described. Failed files keep their path and
-/// name, plus hash/size when they could be read.
+/// Describes a single file in a manifest: where it lives, its name and
+/// extension, its content hash and size, and any error that prevented it from
+/// being described. Failed files keep their path and name, plus hash/size when
+/// they could be read.
 /// </summary>
 /// <param name="FilePath">Absolute path of the file.</param>
 /// <param name="FileName">Name of the file, including its extension.</param>

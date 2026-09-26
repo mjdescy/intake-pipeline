@@ -1,9 +1,11 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/IntakePipeline.Core/IntakePipeline.Core.csproj" />
     <Project Path="src/IntakePipeline.Step.Ingest/IntakePipeline.Step.Ingest.csproj" />
     <Project Path="src/IntakePipeline.Step.Manifest/IntakePipeline.Step.Manifest.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/IntakePipeline.Core.Tests/IntakePipeline.Core.Tests.csproj" />
     <Project Path="tests/IntakePipeline.Step.Ingest.Tests/IntakePipeline.Step.Ingest.Tests.csproj" />
     <Project Path="tests/IntakePipeline.Step.Manifest.Tests/IntakePipeline.Step.Manifest.Tests.csproj" />
   </Folder>

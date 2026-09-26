@@ -1,4 +1,4 @@
-namespace IntakePipeline.Step.Manifest.Manifest;
+namespace IntakePipeline.Core.Manifest;
 
 /// <summary>
 /// Status values for a manifest run. Kept as constants so that the manifest

@@ -1,7 +1,7 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
 
-namespace IntakePipeline.Step.Manifest.Manifest;
+namespace IntakePipeline.Core.Manifest;
 
 /// <summary>
 /// Reads and writes file manifests as camelCase JSON. Manifests are written
@@ -19,7 +19,7 @@ public static class ManifestIO
     };
 
     /// <summary>
-    /// Reads back a file manifest previously written by this step.
+    /// Reads a file manifest previously written by a pipeline step.
     /// </summary>
     /// <exception cref="FileNotFoundException">The manifest file does not exist.</exception>
     /// <exception cref="InvalidDataException">The file is not a valid file manifest.</exception>

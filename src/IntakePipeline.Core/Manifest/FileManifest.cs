@@ -1,8 +1,8 @@
-namespace IntakePipeline.Step.Manifest.Manifest;
+namespace IntakePipeline.Core.Manifest;
 
 /// <summary>
-/// Manifest produced by a manifest run, describing every file discovered under
-/// the manifested folder, any errors encountered, and the overall status.
+/// The shared manifest describing a set of files and the run that produced it.
+/// Every pipeline step can read or write this structure.
 /// </summary>
 /// <param name="RunId">Identifier supplied by the caller for this run.</param>
 /// <param name="Folder">Absolute path of the folder that was manifested.</param>

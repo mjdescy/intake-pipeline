@@ -1,5 +1,5 @@
 using System.Text.Json;
-using IntakePipeline.Step.Manifest.Manifest;
+using IntakePipeline.Core.Manifest;
 
 namespace IntakePipeline.Step.Manifest.Tests;
 
