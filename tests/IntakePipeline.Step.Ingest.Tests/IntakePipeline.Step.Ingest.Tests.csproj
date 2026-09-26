@@ -18,4 +18,8 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\IntakePipeline.Step.Ingest\IntakePipeline.Step.Ingest.csproj" />
+  </ItemGroup>
+
 </Project>
