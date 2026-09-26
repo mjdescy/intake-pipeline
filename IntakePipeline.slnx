@@ -1,2 +1,8 @@
 <Solution>
+  <Folder Name="/src/">
+    <Project Path="src/IntakePipeline.Step.Ingest/IntakePipeline.Step.Ingest.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/IntakePipeline.Step.Ingest.Tests/IntakePipeline.Step.Ingest.Tests.csproj" />
+  </Folder>
 </Solution>
